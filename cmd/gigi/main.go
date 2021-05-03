@@ -1,0 +1,4 @@
+package gigi
+
+func main() {
+}
