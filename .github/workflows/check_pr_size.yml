@@ -1,0 +1,11 @@
+name: check-pr-size
+on: [pull_request]
+jobs:
+  linter_name:
+    name: runner / check-pr-size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: budougumi0617/action-pr-size-checker@v0
+        with:
+          github_token: ${{ secrets.github_token }}
+          max_added_count: 300
