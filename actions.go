@@ -38,9 +38,8 @@ func Load() (Config, error) {
 	if err := json.NewDecoder(f).Decode(&gpe); err != nil {
 		return cfg, err
 	}
-	fmt.Printf("info: event json %+v\n", gpe)
 	repo := gpe.GetRepo()
-	n := strings.Split(repo.GetName(), "/")
+	n := strings.Split(repo.GetFullName(), "/")
 	if len(n) != 2 {
 		return cfg, fmt.Errorf("want \"owrner/repo\", but got %q", repo.GetName())
 	}
