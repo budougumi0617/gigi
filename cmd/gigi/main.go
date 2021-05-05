@@ -17,17 +17,26 @@ func run() int {
 	ctx := context.Background()
 	cfg, err := gigi.Load()
 	if err != nil {
-		fmt.Printf("cannot load setting: %v", err)
+		fmt.Printf("cannot load setting: %v\n", err)
 		return 1
 	}
 	result, err := gigi.GetDiffs(ctx, cfg)
 	if err != nil {
-		fmt.Printf("failed to get result: %v", err)
+		fmt.Printf("failed to get result: %v\n", err)
 		return 1
 	}
+
+	fmt.Printf("result added count %d\n", result.TotalAddedCount)
+	if len(result.Files) != 0 {
+		fmt.Printf("found files\n")
+		for _, file := range result.Files {
+			fmt.Printf("%q:%d\n", file.Name, file.AddedCount)
+		}
+	}
+
 	if cfg.MaxAddedCount < result.TotalAddedCount {
 		if err := gigi.Report(ctx, cfg, result); err != nil {
-			fmt.Printf("failed to report: %v", err)
+			fmt.Printf("failed to report: %v\n", err)
 		}
 		// alert unexpected result.
 		return 1
