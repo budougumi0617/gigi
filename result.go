@@ -8,4 +8,5 @@ type File struct {
 type Result struct {
 	TotalAddedCount int
 	Files           []File
+	Filtered        []File
 }

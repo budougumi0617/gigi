@@ -2,6 +2,7 @@ package gigi
 
 import (
 	"context"
+	"regexp"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -27,6 +28,27 @@ func TestGetDiffs(t *testing.T) {
 					{Name: "inspect.go", AddedCount: 51},
 					{Name: "nrseg.go", AddedCount: 104},
 					{Name: "process.go", AddedCount: 18},
+				},
+			},
+		},
+		{
+			name: "filter",
+			// https://patch-diff.githubusercontent.com/raw/budougumi0617/nrseg/pull/16.diff
+			cfg: Config{
+				Owner:             "budougumi0617",
+				Repository:        "nrseg",
+				PullRequestNumber: 16,
+				Filter:            regexp.MustCompile("go.sum|.*_test.go"),
+			},
+			want: Result{
+				TotalAddedCount: 16,
+				Files: []File{
+					{Name: "inspect.go", AddedCount: 0},
+					{Name: "nrseg.go", AddedCount: 16},
+				},
+				Filtered: []File{
+					{Name: "go.sum", AddedCount: 0},
+					{Name: "nrseg_test.go", AddedCount: 72},
 				},
 			},
 		},
