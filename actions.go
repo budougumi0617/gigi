@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -48,6 +49,14 @@ func Load() (Config, error) {
 	}
 	cfg.MaxAddedCount = max
 	cfg.GitHubToken = os.Getenv("GIGI_GITHUB_TOKEN")
-	cfg.FilterPattern = os.Getenv("GIGI_FILTER_PATTERN")
+	fp := os.Getenv("GIGI_FILTER_PATTERN")
+	if len(fp) != 0 {
+		if cp, err := regexp.Compile(fp); err != nil {
+			return cfg, err
+		} else {
+			cfg.Filter = cp
+		}
+
+	}
 	return cfg, nil
 }

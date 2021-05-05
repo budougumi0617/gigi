@@ -1,9 +1,11 @@
 package gigi
 
+import "regexp"
+
 type Config struct {
 	Owner, Repository string
 	PullRequestNumber int
 	GitHubToken       string
 	MaxAddedCount     int
-	FilterPattern     string
+	Filter            *regexp.Regexp
 }

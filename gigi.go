@@ -47,8 +47,12 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 				}
 			}
 		}
-		r.TotalAddedCount += f.AddedCount
-		r.Files = append(r.Files, f)
+		if cfg.Filter != nil && cfg.Filter.MatchString(f.Name) {
+			r.Filtered = append(r.Filtered, f)
+		} else {
+			r.TotalAddedCount += f.AddedCount
+			r.Files = append(r.Files, f)
+		}
 	}
 
 	return r, nil

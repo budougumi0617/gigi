@@ -2,6 +2,7 @@ package gigi
 
 import (
 	"context"
+	"regexp"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -37,10 +38,10 @@ func TestGetDiffs(t *testing.T) {
 				Owner:             "budougumi0617",
 				Repository:        "nrseg",
 				PullRequestNumber: 16,
-				FilterPattern:     "go.sum|*_test.go",
+				Filter:            regexp.MustCompile("go.sum|.*_test.go"),
 			},
 			want: Result{
-				TotalAddedCount: 173,
+				TotalAddedCount: 16,
 				Files: []File{
 					{Name: "inspect.go", AddedCount: 0},
 					{Name: "nrseg.go", AddedCount: 16},
