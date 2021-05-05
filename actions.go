@@ -51,12 +51,11 @@ func Load() (Config, error) {
 	cfg.GitHubToken = os.Getenv("GIGI_GITHUB_TOKEN")
 	fp := os.Getenv("GIGI_FILTER_PATTERN")
 	if len(fp) != 0 {
-		if cp, err := regexp.Compile(fp); err != nil {
+		cp, err := regexp.Compile(fp)
+		if err != nil {
 			return cfg, err
-		} else {
-			cfg.Filter = cp
 		}
-
+		cfg.Filter = cp
 	}
 	return cfg, nil
 }
