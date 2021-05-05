@@ -15,6 +15,8 @@ type EventType string
 
 const EventTypePullRequest EventType = "pull_request"
 
+var ErrNoEventTypePullRequest = fmt.Errorf("not pull_request event")
+
 func Load() (Config, error) {
 	var cfg Config
 
@@ -23,7 +25,8 @@ func Load() (Config, error) {
 		return cfg, fmt.Errorf("not on Actions")
 	}
 	if e := EventType(os.Getenv("GITHUB_EVENT_NAME")); e == EventTypePullRequest {
-		return cfg, fmt.Errorf("not pull_request event")
+		fmt.Printf("event type: %q", os.Getenv("GITHUB_EVENT_NAME"))
+		return cfg, ErrNoEventTypePullRequest
 	}
 	epath := os.Getenv("GITHUB_EVENT_PATH")
 	var gpe github.PullRequestEvent
