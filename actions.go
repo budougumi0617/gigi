@@ -48,5 +48,6 @@ func Load() (Config, error) {
 	}
 	cfg.MaxAddedCount = max
 	cfg.GitHubToken = os.Getenv("GIGI_GITHUB_TOKEN")
+	cfg.FilterPattern = os.Getenv("GIGI_FILTER_PATTERN")
 	return cfg, nil
 }

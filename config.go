@@ -5,4 +5,5 @@ type Config struct {
 	PullRequestNumber int
 	GitHubToken       string
 	MaxAddedCount     int
+	FilterPattern     string
 }
