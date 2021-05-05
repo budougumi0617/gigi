@@ -33,8 +33,14 @@ func run() int {
 
 	fmt.Printf("result added count %d\n", result.TotalAddedCount)
 	if len(result.Files) != 0 {
-		fmt.Printf("found files\n")
+		fmt.Printf("-----found files\n")
 		for _, file := range result.Files {
+			fmt.Printf("%q:%d\n", file.Name, file.AddedCount)
+		}
+	}
+	if len(result.Filtered) != 0 {
+		fmt.Printf("-----ignore files\n")
+		for _, file := range result.Filtered {
 			fmt.Printf("%q:%d\n", file.Name, file.AddedCount)
 		}
 	}

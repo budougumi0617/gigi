@@ -1,6 +1,7 @@
 package gigi
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -59,6 +60,24 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 }
 
 func Report(ctx context.Context, cfg Config, result *Result) error {
+	var bb bytes.Buffer
+	if _, err := fmt.Fprintf(&bb, "allow added line count %d, but got %d\n\n", cfg.MaxAddedCount, result.TotalAddedCount); err != nil {
+		return err
+	}
+	for _, file := range result.Files {
+		if _, err := fmt.Fprintf(&bb, "%q is added %d lines\n", file.Name, file.AddedCount); err != nil {
+			return err
+		}
+	}
+	if len(result.Filtered) != 0 {
+		for _, file := range result.Filtered {
+			if _, err := fmt.Fprintf(&bb, "ignored: %q is added %d lines\n", file.Name, file.AddedCount); err != nil {
+				return err
+			}
+		}
+	}
+	body := bb.String()
+
 	var hc *http.Client
 	if len(cfg.GitHubToken) != 0 {
 		hc = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
@@ -66,11 +85,11 @@ func Report(ctx context.Context, cfg Config, result *Result) error {
 		))
 	}
 	cli := github.NewClient(hc)
-	body := fmt.Sprintf("allow added line count %d, but got %d", cfg.MaxAddedCount, result.TotalAddedCount)
-	c := &github.PullRequestComment{
+	// To add a regular comment to a pull request timeline, see "Create an issue comment."
+	// https://docs.github.com/en/rest/reference/issues#create-an-issue-comment
+	_, _, err := cli.Issues.CreateComment(ctx, cfg.Owner, cfg.Repository, cfg.PullRequestNumber, &github.IssueComment{
 		Body: &body,
-	}
-	_, _, err := cli.PullRequests.CreateComment(ctx, cfg.Owner, cfg.Repository, cfg.PullRequestNumber, c)
+	})
 	if err != nil {
 		return err
 	}
