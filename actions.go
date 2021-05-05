@@ -24,8 +24,8 @@ func Load() (Config, error) {
 	if ci := os.Getenv("CI"); ci != "true" {
 		return cfg, fmt.Errorf("not on Actions")
 	}
-	if e := EventType(os.Getenv("GITHUB_EVENT_NAME")); e == EventTypePullRequest {
-		fmt.Printf("event type: %q", os.Getenv("GITHUB_EVENT_NAME"))
+	if e := EventType(os.Getenv("GITHUB_EVENT_NAME")); e != EventTypePullRequest {
+		fmt.Printf("event type: %q\n", os.Getenv("GITHUB_EVENT_NAME"))
 		return cfg, ErrNoEventTypePullRequest
 	}
 	epath := os.Getenv("GITHUB_EVENT_PATH")
