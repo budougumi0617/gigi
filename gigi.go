@@ -53,3 +53,22 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 
 	return r, nil
 }
+
+func Report(ctx context.Context, cfg Config, result *Result) error {
+	var hc *http.Client
+	if len(cfg.GitHubToken) != 0 {
+		hc = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: cfg.GitHubToken},
+		))
+	}
+	cli := github.NewClient(hc)
+	body := fmt.Sprintf("allow added line count %d, but got %d", cfg.MaxAddedCount, result.TotalAddedCount)
+	c := &github.PullRequestComment{
+		Body: &body,
+	}
+	_, _, err := cli.PullRequests.CreateComment(ctx, cfg.Owner, cfg.Repository, cfg.PullRequestNumber, c)
+	if err != nil {
+		return err
+	}
+	return nil
+}
