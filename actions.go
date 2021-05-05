@@ -38,6 +38,7 @@ func Load() (Config, error) {
 	if err := json.NewDecoder(f).Decode(&gpe); err != nil {
 		return cfg, err
 	}
+	fmt.Printf("info: event json %+v\n", gpe)
 	repo := gpe.GetRepo()
 	n := strings.Split(repo.GetName(), "/")
 	if len(n) != 2 {
