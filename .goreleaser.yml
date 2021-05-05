@@ -1,0 +1,68 @@
+before:
+  hooks:
+    # you may remove this if you don't use vgo
+    - go mod tidy
+    # you may remove this if you don't need go generate
+    #- go generate ./...
+builds:
+  -
+    main: ./cmd/gigi
+    ldflags:
+      - -s -w -X main.Version={{.Version}} -X main.Revision={{.ShortCommit}}
+    env:
+      - CGO_ENABLED=0
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+brews:
+  -
+    # Name template of the recipe
+    # Default to project name
+    name: gigi
+
+    # Github repository to push the tap to.
+    tap:
+      owner: budougumi0617
+      name: homebrew-tap
+
+    # Template for the url which is determined by the given Token (github or gitlab)
+    # Default for github is "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    # Default for gitlab is "https://gitlab.com/<repo_owner>/<repo_name>/uploads/{{ .ArtifactUploadHash }}/{{ .ArtifactName }}"
+    url_template: "https://github.com/budougumi0617/gigi/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    # Git author used to commit to the repository.
+    # Defaults are shown.
+    commit_author:
+      name: budougumi0617
+      email: budougumi0617@gmail.com
+
+    # Your app's homepage.
+    # Default is empty.
+    homepage: "https://github.com/budougumi0617/gigi"
+
+    # Your app's description.
+    # Default is empty.
+    description: "Check pull request size."
+
+    # So you can `brew test` your formula.
+    # Default is empty.
+    test: |
+      system "#{bin}/gigi -h"
+    # Custom install script for brew.
+    # Default is 'bin.install "program"'.
+    install: |
+      bin.install "gigi"
