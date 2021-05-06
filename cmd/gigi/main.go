@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	Version = "tip"
+	Version  = "tip"
 	Revision = "none"
 )
 
