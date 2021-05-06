@@ -61,8 +61,8 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 
 func Report(ctx context.Context, cfg Config, result *Result) error {
 	var bb bytes.Buffer
-	if _, err := fmt.Fprintf(&bb, `## Pull Reuest is too large
-allow added line is %d, but got %d lines.
+	if _, err := fmt.Fprintf(&bb, `## Pull Request is too large
+allow added line is *%d*, but got *%d* lines.
 
 `, cfg.MaxAddedCount, result.TotalAddedCount); err != nil {
 		return err
@@ -74,7 +74,7 @@ allow added line is %d, but got %d lines.
 		return err
 	}
 	for _, file := range result.Files {
-		if _, err := fmt.Fprintf(&bb, "| %s | %d |\n", file.Name, file.AddedCount); err != nil {
+		if _, err := fmt.Fprintf(&bb, "| %s | `%d` |\n", file.Name, file.AddedCount); err != nil {
 			return err
 		}
 	}
@@ -87,12 +87,12 @@ allow added line is %d, but got %d lines.
 			return err
 		}
 		for _, file := range result.Filtered {
-			if _, err := fmt.Fprintf(&bb, "| %s | %d |\n", file.Name, file.AddedCount); err != nil {
+			if _, err := fmt.Fprintf(&bb, "| %s | `%d` |\n", file.Name, file.AddedCount); err != nil {
 				return err
 			}
 		}
 	}
-	if _, err := fmt.Fprintf(&bb, "\n\nreported by gigi %s(%s)", cfg.Version, cfg.Revision); err != nil {
+	if _, err := fmt.Fprintf(&bb, "\n\nreported by gigi `%s`(%s)", cfg.Version, cfg.Revision); err != nil {
 		return err
 	}
 	body := bb.String()
