@@ -76,6 +76,9 @@ func Report(ctx context.Context, cfg Config, result *Result) error {
 			}
 		}
 	}
+	if _, err := fmt.Fprintf(&bb, "\n\nreported by gigi %s(%s)", cfg.Version, cfg.Revision); err != nil {
+		return err
+	}
 	body := bb.String()
 
 	var hc *http.Client
