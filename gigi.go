@@ -69,7 +69,8 @@ allow added line is %d, but got %d lines.
 	}
 	if _, err := fmt.Fprintf(&bb, `### Added files
 |name|added lines|
-|---|---|`); err != nil {
+|---|---|
+`); err != nil {
 		return err
 	}
 	for _, file := range result.Files {
@@ -81,7 +82,8 @@ allow added line is %d, but got %d lines.
 		if _, err := fmt.Fprintf(&bb, `
 ### Ignored files
 |name|added lines|
-|---|---|`); err != nil {
+|---|---|
+`); err != nil {
 			return err
 		}
 		for _, file := range result.Filtered {
