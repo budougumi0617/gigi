@@ -10,6 +10,11 @@ import (
 	"github.com/budougumi0617/gigi"
 )
 
+var (
+	Version  = "tip"
+	Revision = "none"
+)
+
 func main() {
 	os.Exit(run())
 }
@@ -25,6 +30,8 @@ func run() int {
 		fmt.Printf("cannot load setting: %v\n", err)
 		return 1
 	}
+	cfg.Version = Version
+	cfg.Revision = Revision
 	result, err := gigi.GetDiffs(ctx, cfg)
 	if err != nil {
 		fmt.Printf("failed to get result: %v\n", err)

@@ -8,4 +8,6 @@ type Config struct {
 	GitHubToken       string
 	MaxAddedCount     int
 	Filter            *regexp.Regexp
+	Version           string
+	Revision          string
 }
