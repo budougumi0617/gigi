@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"path"
+	"strings"
 
 	"github.com/google/go-github/v35/github"
 	"github.com/reviewdog/reviewdog/diff"
@@ -13,7 +13,7 @@ import (
 )
 
 func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
-	var hc *http.Client
+	hc := http.DefaultClient
 	if len(cfg.GitHubToken) != 0 {
 		hc = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: cfg.GitHubToken},
@@ -24,15 +24,24 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	durl := pr.GetDiffURL()
-	if durl == "" {
-		return nil, fmt.Errorf("cannot get diff source")
+	url := pr.GetURL()
+	if url == "" {
+		return nil, fmt.Errorf("cannot get URL")
 	}
-	resp, err := http.Get(durl)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/vnd.github.v3.diff")
+
+	resp, err := hc.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("cannot get diff, status code %d", resp.StatusCode)
+	}
 	fds, err := diff.ParseMultiFile(resp.Body)
 	if err != nil {
 		return nil, err
@@ -50,7 +59,7 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 		}
 		if cfg.Filter != nil && cfg.Filter.MatchString(f.Name) {
 			r.Filtered = append(r.Filtered, f)
-		} else if f.AddedCount != 0 {
+		} else if len(fd.PathNew) != 0 && len(fd.Hunks) != 0 {
 			r.TotalAddedCount += f.AddedCount
 			r.Files = append(r.Files, f)
 		}
