@@ -40,7 +40,7 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 
 	r := &Result{}
 	for _, fd := range fds {
-		f := File{Name: path.Base(fd.PathNew)}
+		f := File{Name: fd.PathNew[strings.Index(fd.PathNew, "/")+1:]}
 		for _, h := range fd.Hunks {
 			for _, line := range h.Lines {
 				if line.Type == diff.LineAdded {
@@ -50,7 +50,7 @@ func GetDiffs(ctx context.Context, cfg Config) (*Result, error) {
 		}
 		if cfg.Filter != nil && cfg.Filter.MatchString(f.Name) {
 			r.Filtered = append(r.Filtered, f)
-		} else {
+		} else if f.AddedCount != 0 {
 			r.TotalAddedCount += f.AddedCount
 			r.Files = append(r.Files, f)
 		}
