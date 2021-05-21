@@ -54,7 +54,7 @@ func TestGetDiffs(t *testing.T) {
 		},
 		{
 			name: "directory",
-			// https://patch-diff.githubusercontent.com/raw/budougumi0617/nrseg/pull/16.diff
+			// https://patch-diff.githubusercontent.com/raw/budougumi0617/nrseg/pull/2.diff
 			cfg: Config{
 				Owner:             "budougumi0617",
 				Repository:        "nrseg",
