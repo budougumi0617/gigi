@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"os"
 
@@ -19,7 +18,6 @@ func main() {
 	os.Exit(run())
 }
 func run() int {
-	flag.Parse()
 	ctx := context.Background()
 	cfg, err := gigi.Load()
 	if err != nil {
