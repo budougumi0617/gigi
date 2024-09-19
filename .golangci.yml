@@ -6,7 +6,7 @@ linters:
     - godot
     - revive
     - errorlint
-    - staticcehck
+    - staticcheck
 linters-settings:
   errcheck:
     check-type-assertions: true
