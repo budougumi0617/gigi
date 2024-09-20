@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
@@ -17,14 +16,11 @@ var (
 func main() {
 	os.Exit(run())
 }
+
 func run() int {
 	ctx := context.Background()
 	cfg, err := gigi.Load()
 	if err != nil {
-		if errors.Is(err, gigi.ErrNoEventTypePullRequest) {
-			fmt.Println("not support event type")
-			return 0
-		}
 		fmt.Printf("cannot load setting: %v\n", err)
 		return 1
 	}
