@@ -11,12 +11,6 @@ import (
 	"github.com/google/go-github/v35/github"
 )
 
-type EventType string
-
-const EventTypePullRequest EventType = "pull_request"
-
-var ErrNoEventTypePullRequest = fmt.Errorf("not pull_request event")
-
 func Load() (Config, error) {
 	var cfg Config
 
@@ -24,10 +18,8 @@ func Load() (Config, error) {
 	if ci := os.Getenv("CI"); ci != "true" {
 		return cfg, fmt.Errorf("not on Actions")
 	}
-	if e := EventType(os.Getenv("GITHUB_EVENT_NAME")); e != EventTypePullRequest {
-		fmt.Printf("event type: %q\n", os.Getenv("GITHUB_EVENT_NAME"))
-		return cfg, ErrNoEventTypePullRequest
-	}
+	fmt.Printf("event type: %q\n", os.Getenv("GITHUB_EVENT_NAME"))
+
 	epath := os.Getenv("GITHUB_EVENT_PATH")
 	var gpe github.PullRequestEvent
 	f, err := os.Open(epath)

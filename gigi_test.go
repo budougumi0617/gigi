@@ -84,7 +84,24 @@ func TestGetDiffs(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "pull_request_target",
+			// https://patch-diff.githubusercontent.com/raw/budougumi0617/nrseg/pull/21.diff
+			cfg: Config{
+				Owner:             "budougumi0617",
+				Repository:        "nrseg",
+				PullRequestNumber: 21,
+				Filter:            regexp.MustCompile("go.sum|.*_test.go"),
+			},
+			want: Result{
+				TotalAddedCount: 7,
+				Files: []File{
+					{Name: "process.go", AddedCount: 7},
+				},
+			},
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got, err := GetDiffs(context.TODO(), tt.cfg); err != nil {
