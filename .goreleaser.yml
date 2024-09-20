@@ -1,68 +1,72 @@
+version: 2
+
 before:
   hooks:
-    # you may remove this if you don't use vgo
+    - go mod download
     - go mod tidy
-    # you may remove this if you don't need go generate
-    #- go generate ./...
+
 builds:
-  -
-    main: ./cmd/gigi
+  - id: gigi-darwin
     ldflags:
       - -s -w -X main.Version={{.Version}} -X main.Revision={{.ShortCommit}}
     env:
       - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/gigi/main.go
+  - id: gigi-linux
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/gigi/main.go
+  - id: gigi-windows
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      - amd64
+    main: ./cmd/gigi/main.go
+
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+  - format: "tar.gz"
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - CHANGELOG.md
+      - LICENSE
+      - README.md
 checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "checksums.txt"
+
 changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
-brews:
-  -
-    # Name template of the recipe
-    # Default to project name
-    name: gigi
+      - "^docs:"
+      - "^test:"
 
-    # Github repository to push the tap to.
-    tap:
+brews:
+  - name: gigi
+    url_template: "https://github.com/budougumi0617/gigi/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    repository:
       owner: budougumi0617
       name: homebrew-tap
-
-    # Template for the url which is determined by the given Token (github or gitlab)
-    # Default for github is "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    # Default for gitlab is "https://gitlab.com/<repo_owner>/<repo_name>/uploads/{{ .ArtifactUploadHash }}/{{ .ArtifactName }}"
-    url_template: "https://github.com/budougumi0617/gigi/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-
-    # Git author used to commit to the repository.
-    # Defaults are shown.
+      token: "{{ .Env.GITHUB_TOKEN }}"
     commit_author:
-      name: budougumi0617
-      email: budougumi0617@gmail.com
-
-    # Your app's homepage.
-    # Default is empty.
+      name: "github-actions[bot]"
+      email: "github-actions[bot]@users.noreply.github.com"
     homepage: "https://github.com/budougumi0617/gigi"
-
-    # Your app's description.
-    # Default is empty.
-    description: "Check pull request size."
-
-    # So you can `brew test` your formula.
-    # Default is empty.
-    test: |
-      system "#{bin}/gigi -h"
-    # Custom install script for brew.
-    # Default is 'bin.install "program"'.
+    description: "Insert function segments into any function/method for Newrelic APM."
+    license: "MIT"
     install: |
       bin.install "gigi"
+    test: |
+      system "#{bin}/gigi -h"
+

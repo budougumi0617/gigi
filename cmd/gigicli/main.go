@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/budougumi0617/gigi"
 )
@@ -16,16 +18,36 @@ var (
 func main() {
 	os.Exit(run())
 }
-
 func run() int {
+	flag.Parse()
 	ctx := context.Background()
-	cfg, err := gigi.Load()
-	if err != nil {
-		fmt.Printf("cannot load setting: %v\n", err)
+	cfg := gigi.Config{
+		Owner:             "",
+		Repository:        "",
+		PullRequestNumber: 0,
+		GitHubToken:       "",
+		MaxAddedCount:     0,
+		Filter:            nil,
+		Version:           "",
+		Revision:          "",
+	}
+	if len(flag.Args()) != 3 {
+		fmt.Printf("usage: gigicli OWNER_NAME REPO_NAME PR_NUMBER\n")
 		return 1
 	}
 	cfg.Version = Version
 	cfg.Revision = Revision
+	cfg.GitHubToken = os.Getenv("GITHUB_TOKEN")
+	cfg.Owner = flag.Arg(0)
+	cfg.Repository = flag.Arg(1)
+	pr, err := strconv.Atoi(flag.Arg(2))
+	if err != nil {
+		fmt.Printf("cannot convert pr: %v\n", err)
+		return 1
+	}
+	cfg.MaxAddedCount = 300 // 暫定
+	cfg.PullRequestNumber = pr
+	fmt.Printf("%s/%s pr number %d check!\n", cfg.Owner, cfg.Repository, cfg.PullRequestNumber)
 	result, err := gigi.GetDiffs(ctx, cfg)
 	if err != nil {
 		fmt.Printf("failed to get result: %v\n", err)
@@ -46,12 +68,5 @@ func run() int {
 		}
 	}
 
-	if cfg.MaxAddedCount < result.TotalAddedCount {
-		if err := gigi.Report(ctx, cfg, result); err != nil {
-			fmt.Printf("failed to report: %v\n", err)
-		}
-		// alert unexpected result.
-		return 1
-	}
 	return 0
 }
