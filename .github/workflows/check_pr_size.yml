@@ -5,7 +5,7 @@ jobs:
     name: runner / check-pr-size
     runs-on: ubuntu-latest
     steps:
-      - uses: budougumi0617/action-pr-size-checker@v0
+      - uses: budougumi0617/action-pr-size-checker@9422aa8c05ae9bea1368d283fb1615028539be36 # v0.0.8
         with:
           github_token: ${{ secrets.github_token }}
           max_added_count: 300
